@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Report Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .pdf-viewer {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            border-radius: 5px;
+            position: relative;
+        }
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #4285f4;
+            padding-bottom: 20px;
+        }
+        .report-id {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #777;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4285f4;
+        }
+        .report-title {
+            font-size: 22px;
+            margin: 20px 0 10px;
+        }
+        .patient-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .report-section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4285f4;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .normal-range {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .abnormal {
+            color: #d93025;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .signature {
+            margin-top: 30px;
+        }
+        .page-number {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        /* Template selectors for dynamic content */
+        #report-type-title {
+            font-weight: bold;
+        }
+        #doctor-name {
+            font-style: italic;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            // Get report type from URL parameter
+            const params = new URLSearchParams(window.location.search);
+            const reportType = params.get('type') || 'general';
+            
+            // Set report specific content
+            let title, doctor, reportId, reportDate, collection;
+            
+            switch(reportType) {
+                case 'blood':
+                    title = "Blood Test";
+                    doctor = "Dr. Sarah Johnson";
+                    reportId = "BT-2023-04-10-001";
+                    reportDate = "April 12, 2023";
+                    collection = "April 10, 2023";
+                    break;
+                case 'xray':
+                    title = "X-Ray";
+                    doctor = "Dr. Michael Chen";
+                    reportId = "XR-2023-03-15-002";
+                    reportDate = "March 18, 2023";
+                    collection = "March 15, 2023";
+                    break;
+                case 'allergy':
+                    title = "Allergy Test";
+                    doctor = "Dr. David Williams";
+                    reportId = "AT-2023-01-05-003";
+                    reportDate = "January 8, 2023";
+                    collection = "January 5, 2023";
+                    break;
+                default:
+                    title = "General Checkup";
+                    doctor = "Dr. Emily Rodriguez";
+                    reportId = "GC-2023-02-22-004";
+                    reportDate = "February 24, 2023";
+                    collection = "February 22, 2023";
+            }
+            
+            // Update the dynamic content
+            document.getElementById('report-type-title').innerText = title;
+            document.getElementById('doctor-name').innerText = doctor;
+            document.getElementById('report-id').innerText = reportId;
+            document.getElementById('report-date').innerText = reportDate;
+            document.getElementById('collection-date').innerText = collection;
+            document.title = title + " Report";
+        };
+    </script>
+</head>
+<body>
+    <div class="pdf-viewer">
+        <div class="report-id" id="report-id">LAB-2023-XX-XX-XXX</div>
+        
+        <div class="report-header">
+            <div class="logo">StayHealthy Medical Center</div>
+            <p>123 Healthcare Avenue, Medical District<br>
+               Phone: (555) 123-4567 | Email: care@stayhealthy.com</p>
+        </div>
+
+        <h1 class="report-title"><span id="report-type-title">Medical</span> Report</h1>
+        
+        <div class="patient-info">
+            <strong>Patient Name:</strong> John Smith<br>
+            <strong>Patient ID:</strong> P12345678<br>
+            <strong>Date of Birth:</strong> January 15, 1980<br>
+            <strong>Gender:</strong> Male<br>
+            <strong>Sample Collection Date:</strong> <span id="collection-date">Date</span><br>
+            <strong>Report Date:</strong> <span id="report-date">Date</span>
+        </div>
+
+        <div class="report-section">
+            <h2 class="section-title">Results Summary</h2>
+            <p>The examination was conducted by <span id="doctor-name">Doctor</span> on the indicated collection date. The findings are summarized below:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Parameter</th>
+                        <th>Result</th>
+                        <th>Normal Range</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Parameter 1</td>
+                        <td>Normal</td>
+                        <td class="normal-range">Reference</td>
+                        <td>✓</td>
+                    </tr>
+                    <tr>
+                        <td>Parameter 2</td>
+                        <td class="abnormal">Abnormal</td>
+                        <td class="normal-range">Reference</td>
+                        <td>⚠</td>
+                    </tr>
+                    <tr>
+                        <td>Parameter 3</td>
+                        <td>Normal</td>
+                        <td class="normal-range">Reference</td>
+                        <td>✓</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="report-section">
+            <h2 class="section-title">Interpretation</h2>
+            <p>Based on the above results, the patient is in generally good health. Some minor abnormalities were detected, but they are not cause for immediate concern. Regular follow-up is recommended.</p>
+        </div>
+
+        <div class="report-section">
+            <h2 class="section-title">Recommendations</h2>
+            <ul>
+                <li>Maintain a balanced diet rich in fruits and vegetables</li>
+                <li>Exercise regularly, aiming for at least 150 minutes of moderate activity per week</li>
+                <li>Schedule a follow-up appointment in 6 months</li>
+                <li>Continue taking any prescribed medications as directed</li>
+            </ul>
+        </div>
+
+        <div class="signature">
+            <p>Electronically verified by:<br><br>
+            <strong id="doctor-signature">Doctor Name, MD</strong><br>
+            Medical Department<br>
+            License: MD12345</p>
+        </div>
+
+        <div class="footer">
+            <p>This report is generated electronically and is valid without a signature. The results relate only to the samples tested. This document contains private and confidential health information protected by law.</p>
+        </div>
+        
+        <div class="page-number">Page 1 of 1</div>
+    </div>
+</body>
+</html> 

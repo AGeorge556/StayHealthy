@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/StayHealthy/static/css/main.7a50ce0d.css",
+    "main.js": "/StayHealthy/static/js/main.0422688f.js",
+    "static/js/453.d344ce6c.chunk.js": "/StayHealthy/static/js/453.d344ce6c.chunk.js",
+    "static/media/logo.svg": "/StayHealthy/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/StayHealthy/index.html",
+    "main.7a50ce0d.css.map": "/StayHealthy/static/css/main.7a50ce0d.css.map",
+    "main.0422688f.js.map": "/StayHealthy/static/js/main.0422688f.js.map",
+    "453.d344ce6c.chunk.js.map": "/StayHealthy/static/js/453.d344ce6c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7a50ce0d.css",
+    "static/js/main.0422688f.js"
+  ]
+}
