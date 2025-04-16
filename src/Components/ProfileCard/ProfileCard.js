@@ -323,12 +323,6 @@ const ProfileCard = () => {
 
   return (
     <div className="profile-container">
-      {!isServerAvailable && !USE_MOCK_API && (
-        <div className="server-status-banner">
-          <p>Server is currently unavailable. Working in offline mode.</p>
-          <small>To use the server: Navigate to the server folder and run <code>node index.js</code></small>
-        </div>
-      )}
       <div className="profile-card">
         <div className="profile-header">
           <div className="profile-avatar">
@@ -419,12 +413,10 @@ const ProfileCard = () => {
                 <strong>Total Appointments:</strong>
                 <span>{getTotalAppointments()}</span>
               </div>
-              {!isServerAvailable && !USE_MOCK_API && (
-                <div className="detail-row server-status">
-                  <strong>Status:</strong>
-                  <span className="offline-indicator">Offline Mode</span>
-                </div>
-              )}
+              <div className="detail-row">
+                <strong>Status:</strong>
+                <span>{(!isServerAvailable || USE_MOCK_API) ? "Offline Mode" : "Active"}</span>
+              </div>
             </div>
           )}
         </div>

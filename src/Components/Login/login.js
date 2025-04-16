@@ -56,27 +56,7 @@ const Login = () => {
         
         // If we're in mock mode or server is unavailable
         if (USE_MOCK_API || !isServerAvailable) {
-            // Mock login - store data in session storage
-            // In a real app, you'd validate against a local DB
-            
-            // Basic validation logic for demo - accept any valid email/password
-            if (password.length >= 6) {
-                sessionStorage.setItem("auth-token", "mock-auth-token");
-                sessionStorage.setItem("email", email);
-                
-                // Extract name from email for display
-                const name = email.split('@')[0];
-                sessionStorage.setItem("name", name);
-                
-                // Dispatch login event
-                const loginEvent = new Event('login');
-                window.dispatchEvent(loginEvent);
-                
-                // Navigate to home page
-                navigate('/');
-            } else {
-                setShowerr('Invalid credentials');
-            }
+            handleMockLogin();
             return;
         }
         
@@ -100,6 +80,11 @@ const Login = () => {
             });
             
             clearTimeout(timeoutId);
+            
+            // Check if the response is ok
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
             
             const json = await response.json(); // Parse the response JSON
             
@@ -129,12 +114,10 @@ const Login = () => {
         } catch (error) {
             console.error('API call failed:', error);
             
-            // Server unavailable - switch to mock mode
+            // Handle all errors by switching to offline mode
             setIsServerAvailable(false);
-            setShowerr('Server unavailable. Please try again in a moment or continue in offline mode.');
-            
-            // Add a button to continue in offline mode
-            // This will be handled in the JSX
+            setShowerr("Logging in offline mode");
+            setTimeout(() => handleMockLogin(), 1000);
         }
     };
 
@@ -174,14 +157,6 @@ const Login = () => {
                 {showSuccess && (
                     <div className="success-message" style={{ color: 'green', marginBottom: '15px', padding: '10px', backgroundColor: '#f0fff0', borderRadius: '5px' }}>
                         Registration successful! Please login with your credentials.
-                    </div>
-                )}
-                {!isServerAvailable && !USE_MOCK_API && (
-                    <div className="server-status-message" style={{ color: '#856404', marginBottom: '15px', padding: '10px', backgroundColor: '#fff3cd', borderRadius: '5px' }}>
-                        Server is currently unavailable. You will be logged in in offline mode.
-                        <br /><small style={{ display: 'block', marginTop: '5px' }}>
-                            To use the server: Navigate to the server folder and run <code>node index.js</code>
-                        </small>
                     </div>
                 )}
                 <div className="login-form">

@@ -47,9 +47,6 @@ const Landing_Page = () => {
               <div className="blob-cont"> {/* Creating another div with class name 'blob-cont' */}
                   <div className="blue1 blob"></div> {/* Creating a different blue blob inside the second 'blob-cont' div */}
               </div>
-            <h4>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque at quae ducimus. Suscipit omnis quibusdam non cum rem voluptatem!
-            </h4>
             {/* Use button with onClick handler instead of anchor tag */}
             <button className="button" onClick={handleGetStarted}>
               {isLoggedIn ? "Book Consultation" : "Get Started"}

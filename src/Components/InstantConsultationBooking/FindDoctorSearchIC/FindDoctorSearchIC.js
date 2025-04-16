@@ -18,7 +18,7 @@ const initCities = [
     'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'
 ];
 
-const FindDoctorSearchIC = () => {
+const FindDoctorSearchIC = ({ onSearch, hideHeader = false }) => {
     // State for specialty search
     const [doctorResultHidden, setDoctorResultHidden] = useState(true);
     const [searchDoctor, setSearchDoctor] = useState('');
@@ -64,6 +64,12 @@ const FindDoctorSearchIC = () => {
         setSearchDoctor(speciality);
         setDoctorResultHidden(true);
         
+        // If an external onSearch handler is provided, use it
+        if (onSearch) {
+            onSearch(speciality);
+            return;
+        }
+        
         // Create query parameters for navigation
         const queryParams = new URLSearchParams();
         queryParams.append('speciality', speciality);
@@ -85,6 +91,12 @@ const FindDoctorSearchIC = () => {
     const handleSearch = (e) => {
         e.preventDefault();
         
+        // If an external onSearch handler is provided, use it
+        if (onSearch && searchDoctor) {
+            onSearch(searchDoctor);
+            return;
+        }
+        
         // Create query parameters for navigation
         const queryParams = new URLSearchParams();
         
@@ -102,10 +114,14 @@ const FindDoctorSearchIC = () => {
     return (
         <div className='finddoctor'>
             <center>
-                <h1>Find a doctor and Consult instantly</h1>
-                <div>
-                    <i style={{color:'#000000',fontSize:'20rem'}} className="fa fa-user-md"></i>
-                </div>
+                {!hideHeader && (
+                    <>
+                        <h1>Find a doctor and Consult instantly</h1>
+                        <div>
+                            <i style={{color:'#000000',fontSize:'20rem'}} className="fa fa-user-md"></i>
+                        </div>
+                    </>
+                )}
                 
                 <form onSubmit={handleSearch} className="search-form">
                     <div className="home-search-container" style={{display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',gap:'15px'}}>

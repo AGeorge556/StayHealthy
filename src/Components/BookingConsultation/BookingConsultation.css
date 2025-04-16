@@ -83,4 +83,26 @@
   .doctor-cards-grid {
     grid-template-columns: 1fr 1fr 1fr;
   }
+}
+
+/* Custom styles for the doctor search in this page */
+.custom-find-doctor-search {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Make the search boxes more visible */
+.custom-find-doctor-search .doctor-search-box,
+.custom-find-doctor-search .location-search-box {
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Adjust spacing for results */
+.search-results-container {
+    margin-top: 40px;
 } 

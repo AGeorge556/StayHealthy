@@ -4,6 +4,15 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import FindDoctorSearchIC from '../InstantConsultationBooking/FindDoctorSearchIC/FindDoctorSearchIC';
 import DoctorCardIC from '../InstantConsultationBooking/DoctorCardIC/DoctorCardIC';
 
+// Custom wrapper to hide the header in FindDoctorSearchIC
+const CustomFindDoctorSearch = ({ onSearch }) => {
+    return (
+        <div className="custom-find-doctor-search">
+            <FindDoctorSearchIC onSearch={onSearch} hideHeader={true} />
+        </div>
+    );
+};
+
 const BookingConsultation = () => {
     const [searchParams] = useSearchParams();
     const [doctors, setDoctors] = useState([]);
@@ -159,7 +168,7 @@ const BookingConsultation = () => {
             <h1 className="booking-title">Book an Appointment</h1>
             <p className="booking-subtitle">Find a doctor and book an appointment at your convenience</p>
             
-            <FindDoctorSearchIC onSearch={handleSearch} />
+            <CustomFindDoctorSearch onSearch={handleSearch} />
             
             <div className="search-results-container">
                 {isLoading ? (

@@ -2,6 +2,7 @@
   "name": "capstone_react",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://AGeorge556.github.io/StayHealthy",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -16,9 +17,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && rm -rdf server/build && mv build server/",
+    "build": "react-scripts build",
+    "build:server": "react-scripts build && (if exist server\\build rmdir /s /q server\\build) && xcopy /E /I build server\\build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -38,5 +42,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://gnfarag02-8181.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai"
+  "proxy": "https://gnfarag02-8181.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai",
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
 }
