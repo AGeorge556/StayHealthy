@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ReviewForm.css';
+import { formatDoctorName } from '../../utils/formatDoctorName';
 
 const ReviewForm = () => {
   const [appointments, setAppointments] = useState([]);
@@ -115,58 +116,58 @@ const ReviewForm = () => {
     }, 2000);
   };
 
-  // Format date for display
-  const formatDate = (dateString) => {
-    try {
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    } catch (error) {
-      return dateString;
-    }
-  };
-
   if (!isLoggedIn) {
-    return <div className="reviews-container">Please log in to view your appointments and provide feedback.</div>;
+    return (
+      <div className="page">
+        <div className="state"><p>Please log in to view your appointments and provide feedback.</p></div>
+      </div>
+    );
   }
 
   return (
-    <div className="reviews-container">
-      <h2>Reviews</h2>
-      
+    <div className="page">
+      <div className="page__header">
+        <h1>Reviews</h1>
+      </div>
+
       {appointments.length === 0 ? (
-        <p className="no-appointments">You don't have any appointments to review.</p>
+        <div className="state">
+          <h3>Nothing to review yet</h3>
+          <p>You don't have any appointments to review.</p>
+        </div>
       ) : (
-        <div className="reviews-table-container">
-          <table className="reviews-table">
+        <div className="table-wrap">
+          <table className="table">
             <thead>
               <tr>
-                <th>Serial Number</th>
-                <th>Doctor Name</th>
-                <th>Doctor Speciality</th>
-                <th>Provide feedback</th>
-                <th>Review Given</th>
+                <th scope="col">Serial Number</th>
+                <th scope="col">Doctor Name</th>
+                <th scope="col">Doctor Speciality</th>
+                <th scope="col">Provide feedback</th>
+                <th scope="col">Review Given</th>
               </tr>
             </thead>
             <tbody>
               {appointments.map((appointment, index) => (
                 <tr key={appointment.id}>
                   <td>{index + 1}</td>
-                  <td>Dr. {appointment.doctorName}</td>
+                  <td>{formatDoctorName(appointment.doctorName)}</td>
                   <td>{appointment.doctorSpeciality}</td>
                   <td>
-                    <button 
-                      className="review-button"
+                    <button
+                      type="button"
+                      className="btn btn--secondary btn--sm"
                       onClick={() => handleOpenReviewForm(appointment)}
                       disabled={appointment.reviewSubmitted}
                     >
-                      Click Here
+                      Write review
                     </button>
                   </td>
                   <td>
                     {appointment.reviewSubmitted ? (
-                      <span className="review-given">✓</span>
+                      <span className="badge">Reviewed</span>
                     ) : (
-                      <span className="review-pending">×</span>
+                      <span className="review-pending">Pending</span>
                     )}
                   </td>
                 </tr>
@@ -175,39 +176,42 @@ const ReviewForm = () => {
           </table>
         </div>
       )}
-      
+
       {showReviewForm && (
-        <div className="review-form-overlay">
-          <div className="review-form-container">
-            <button className="close-review-form" onClick={() => setShowReviewForm(false)}>×</button>
-            <h3>Provide Feedback</h3>
-            
-            <div className="doctor-info">
-              <p><strong>Doctor:</strong> Dr. {reviewData.doctorName}</p>
-              <p><strong>Speciality:</strong> {reviewData.doctorSpecialty}</p>
-            </div>
-            
+        <div className="modal-overlay">
+          <div className="modal" role="dialog" aria-modal="true" aria-labelledby="review-title">
+            <h3 id="review-title">Provide Feedback</h3>
+
+            <p>
+              <strong>Doctor:</strong> {formatDoctorName(reviewData.doctorName)}<br />
+              <strong>Speciality:</strong> {reviewData.doctorSpecialty}
+            </p>
+
             <form onSubmit={handleSubmitReview}>
-              <div className="rating-container">
-                <label>Rating:</label>
-                <div className="stars">
+              <fieldset className="review-rating">
+                <legend className="label">Rating</legend>
+                <div className="review-stars">
                   {[1, 2, 3, 4, 5].map((star) => (
-                    <span 
-                      key={star} 
-                      className={`star ${reviewData.rating >= star ? 'selected' : ''}`}
+                    <button
+                      key={star}
+                      type="button"
+                      className={`review-star${reviewData.rating >= star ? ' is-selected' : ''}`}
+                      aria-label={`${star} star${star > 1 ? 's' : ''}`}
+                      aria-pressed={reviewData.rating === star}
                       onClick={() => handleRatingChange(star)}
                     >
                       ★
-                    </span>
+                    </button>
                   ))}
                 </div>
-              </div>
-              
+              </fieldset>
+
               <div className="form-group">
-                <label htmlFor="comments">Comments:</label>
+                <label htmlFor="comments">Comments</label>
                 <textarea
                   id="comments"
                   name="comments"
+                  className="form-control"
                   value={reviewData.comments}
                   onChange={handleInputChange}
                   placeholder="Share your experience with this doctor..."
@@ -215,15 +219,18 @@ const ReviewForm = () => {
                   required
                 ></textarea>
               </div>
-              
-              <button type="submit" className="submit-review-btn">Submit Review</button>
-            </form>
-            
-            {reviewSubmitted && (
-              <div className="review-success">
-                Thank you for your feedback!
+
+              {reviewSubmitted && (
+                <div className="alert alert--success" role="status">
+                  Thank you for your feedback!
+                </div>
+              )}
+
+              <div className="btn-row">
+                <button type="submit" className="btn btn--primary" disabled={reviewSubmitted}>Submit Review</button>
+                <button type="button" className="btn btn--secondary" onClick={() => setShowReviewForm(false)}>Cancel</button>
               </div>
-            )}
+            </form>
           </div>
         </div>
       )}
@@ -231,4 +238,4 @@ const ReviewForm = () => {
   );
 };
 
-export default ReviewForm; 
+export default ReviewForm;
