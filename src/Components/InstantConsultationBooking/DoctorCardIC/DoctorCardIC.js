@@ -1,13 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import Popup from 'reactjs-popup';
-import 'reactjs-popup/dist/index.css';
 import './DoctorCardIC.css';
 import AppointmentFormIC from '../AppointmentFormIC/AppointmentFormIC';
 import { v4 as uuidv4 } from 'uuid';
+import { formatDoctorName } from '../../../utils/formatDoctorName';
+
+const initials = (name) =>
+  name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+
+const Avatar = ({ name, profilePic }) => {
+  const [failed, setFailed] = useState(false);
+  return (
+    <div className="doctor-avatar" aria-hidden="true">
+      {profilePic && !failed ? (
+        <img src={profilePic} alt="" onError={() => setFailed(true)} />
+      ) : (
+        initials(name) || (
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        )
+      )}
+    </div>
+  );
+};
 
 const DoctorCardIC = ({ name, speciality, experience, ratings, profilePic }) => {
   const [showModal, setShowModal] = useState(false);
   const [appointments, setAppointments] = useState([]);
+  // some data sources already include the "Dr." prefix
+  const displayName = name.replace(/^dr\.?\s+/i, '');
 
   useEffect(() => {
     // Load appointments from localStorage if available
@@ -24,21 +47,17 @@ const DoctorCardIC = ({ name, speciality, experience, ratings, profilePic }) => 
     }
   }, [appointments, name]);
 
-  const handleBooking = () => {
-    setShowModal(true);
-  };
-
   const handleCancel = (appointmentId) => {
     const updatedAppointments = appointments.filter((appointment) => appointment.id !== appointmentId);
     setAppointments(updatedAppointments);
-    
+
     // Remove from localStorage if no appointments left
     if (updatedAppointments.length === 0) {
       localStorage.removeItem(`appointments-${name}`);
     } else {
       localStorage.setItem(`appointments-${name}`, JSON.stringify(updatedAppointments));
     }
-    
+
     // Dispatch a custom event to notify other components about appointment cancellation
     const cancelEvent = new CustomEvent('appointmentCancelled', {
       detail: { doctorName: name, appointmentId }
@@ -56,10 +75,10 @@ const DoctorCardIC = ({ name, speciality, experience, ratings, profilePic }) => 
     };
     const updatedAppointments = [...appointments, newAppointment];
     setAppointments(updatedAppointments);
-    
+
     // Store appointments in localStorage
     localStorage.setItem(`appointments-${name}`, JSON.stringify(updatedAppointments));
-    
+
     // Store doctor data in localStorage for the notification components
     localStorage.setItem('doctorData', JSON.stringify({
       name,
@@ -67,13 +86,13 @@ const DoctorCardIC = ({ name, speciality, experience, ratings, profilePic }) => 
       experience,
       ratings
     }));
-    
+
     setShowModal(false);
-    
+
     // Dispatch an event specifically for the appointment notification
     const bookedEvent = new CustomEvent('appointmentBooked', {
-      detail: { 
-        doctorName: name, 
+      detail: {
+        doctorName: name,
         appointment: newAppointment,
         notificationType: 'appointmentConfirmation'
       }
@@ -87,89 +106,73 @@ const DoctorCardIC = ({ name, speciality, experience, ratings, profilePic }) => 
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const booked = appointments.length > 0;
+
   return (
-    <div className="doctor-card-container">
-      <div className="doctor-card-details-container">
-        <div className="doctor-card-profile-image-container">
-          <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="currentColor" className="bi bi-person-fill" viewBox="0 0 16 16">
-            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-          </svg>
-        </div>
-        <div className="doctor-card-details">
-          <div className="doctor-card-detail-name">Dr. {name}</div>
-          <div className="doctor-card-detail-speciality">{speciality}</div>
-          <div className="doctor-card-detail-experience">{experience} years experience</div>
-          <div className="doctor-card-detail-consultationfees">Ratings: {ratings}</div>
+    <article className="card doctor-card">
+      <div className="doctor-card__head">
+        <Avatar name={displayName} profilePic={profilePic} />
+        <div>
+          <h3 className="doctor-card__name">{formatDoctorName(name)}</h3>
+          <span className="badge">{speciality}</span>
         </div>
       </div>
 
-      <div className="doctor-card-options-container">
-        <Popup
-          style={{ backgroundColor: '#FFFFFF' }}
-          trigger={
-            <button className={`book-appointment-btn ${appointments.length > 0 ? 'cancel-appointment' : ''}`}>
-              {appointments.length > 0 ? (
-                <div>View/Cancel Appointment</div>
-              ) : (
-                <div>Book Appointment</div>
-              )}
-              <div>No Booking Fee</div>
-            </button>
-          }
-          modal
-          open={showModal}
-          onClose={() => setShowModal(false)}
-        >
-          {(close) => (
-            <div className="doctorbg" style={{ height: '100vh', overflow: 'scroll' }}>
-              <div className="popup-header">
-                <div className="doctor-card-profile-image-container">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="currentColor" className="bi bi-person-fill" viewBox="0 0 16 16">
-                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                  </svg>
-                </div>
-                <div className="doctor-card-details">
-                  <div className="doctor-card-detail-name">Dr. {name}</div>
-                  <div className="doctor-card-detail-speciality">{speciality}</div>
-                  <div className="doctor-card-detail-experience">{experience} years experience</div>
-                  <div className="doctor-card-detail-consultationfees">Ratings: {ratings}</div>
-                </div>
+      <dl className="doctor-card__meta">
+        <div><dt>Experience</dt><dd>{experience} years</dd></div>
+        <div><dt>Rating</dt><dd>{ratings} / 5</dd></div>
+      </dl>
+
+      <Popup
+        trigger={
+          <button type="button" className={`btn btn--block ${booked ? 'btn--secondary' : 'btn--primary'}`}>
+            {booked ? 'View / cancel appointment' : 'Book appointment'}
+          </button>
+        }
+        modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+      >
+        {(close) => (
+          <div className="doctor-modal">
+            <div className="doctor-card__head">
+              <Avatar name={displayName} profilePic={profilePic} />
+              <div>
+                <h3 className="doctor-card__name">{formatDoctorName(name)}</h3>
+                <span className="badge">{speciality}</span>
+                <p className="doctor-modal__meta">{experience} years experience &middot; Rating {ratings} / 5</p>
               </div>
-
-              {appointments.length > 0 ? (
-                <div className="appointments-container">
-                  <h3 style={{ textAlign: 'center' }}>Your Appointments</h3>
-                  {appointments.map((appointment) => (
-                    <div className="bookedInfo" key={appointment.id}>
-                      <p className="appointment-info"><strong>Patient:</strong> {appointment.name}</p>
-                      <p className="appointment-info"><strong>Phone:</strong> {appointment.phoneNumber}</p>
-                      <p className="appointment-info">
-                        <strong>Date:</strong> {formatDate(appointment.appointmentDate)}
-                      </p>
-                      <p className="appointment-info"><strong>Time:</strong> {appointment.timeSlot}</p>
-                      <p className="appointment-info"><strong>Booking Date:</strong> {appointment.bookingDate}</p>
-                      <button 
-                        className="cancel-button" 
-                        onClick={() => handleCancel(appointment.id)}
-                      >
-                        Cancel Appointment
-                      </button>
-                    </div>
-                  ))}
-                  <button className="close-button" onClick={close}>Close</button>
-                </div>
-              ) : (
-                <AppointmentFormIC 
-                  doctorName={name} 
-                  doctorSpeciality={speciality} 
-                  onSubmit={handleFormSubmit} 
-                />
-              )}
             </div>
-          )}
-        </Popup>
-      </div>
-    </div>
+
+            {booked ? (
+              <div>
+                <h4>Your appointments</h4>
+                {appointments.map((appointment) => (
+                  <div className="doctor-appointment" key={appointment.id}>
+                    <p><strong>Patient:</strong> {appointment.name}</p>
+                    <p><strong>Phone:</strong> {appointment.phoneNumber}</p>
+                    <p><strong>Date:</strong> {formatDate(appointment.appointmentDate)}</p>
+                    <p><strong>Time:</strong> {appointment.timeSlot}</p>
+                    <p><strong>Booked on:</strong> {appointment.bookingDate}</p>
+                    <button type="button" className="btn btn--danger btn--sm" onClick={() => handleCancel(appointment.id)}>
+                      Cancel appointment
+                    </button>
+                  </div>
+                ))}
+                <button type="button" className="btn btn--secondary" onClick={close}>Close</button>
+              </div>
+            ) : (
+              <AppointmentFormIC
+                doctorName={displayName}
+                doctorSpeciality={speciality}
+                onSubmit={handleFormSubmit}
+                onCancel={close}
+              />
+            )}
+          </div>
+        )}
+      </Popup>
+    </article>
   );
 };
 
