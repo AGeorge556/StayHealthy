@@ -1,9 +1,8 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import { HashRouter, Routes, Route } from "react-router-dom";
 import Navbar from './Components/Navbar/navbar';
-import Landing_page from './Components/Landing_page/Landing_page';  // Ensure correct capitalization
+import LandingPage from './Components/Landing_page/Landing_page';  // Ensure correct capitalization
 import Login from './Components/Login/login';
 import SignUp from './Components/Sign_up/Sign_up';
 import InstantConsultation from './Components/InstantConsultationBooking/InstantConsultation';
@@ -17,7 +16,7 @@ import { checkServerAvailability, SHOW_SERVER_STATUS } from './config';
 
 // Function component for the main App
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem('auth-token'));
+  const [, setIsLoggedIn] = useState(!!sessionStorage.getItem('auth-token'));
   const [serverAvailable, setServerAvailable] = useState(true);
   const [showServerNotice, setShowServerNotice] = useState(SHOW_SERVER_STATUS);
 
@@ -66,34 +65,22 @@ function App() {
   return (
     <div className="App">
       {showServerNotice && !serverAvailable && (
-        <div 
-          style={{
-            position: 'fixed', 
-            top: 0, 
-            left: 0, 
-            right: 0, 
-            backgroundColor: '#fcf8e3', 
-            color: '#8a6d3b',
-            padding: '5px', 
-            fontSize: '12px',
-            textAlign: 'center',
-            zIndex: 1000,
-            cursor: 'pointer'
-          }}
-          onClick={() => setShowServerNotice(false)}
-        >
-          Server unavailable - running in offline mode (click to dismiss)
+        <div className="alert alert--warning server-notice" role="status">
+          Server unavailable, running in offline mode.
+          <button type="button" className="btn btn--ghost btn--sm" onClick={() => setShowServerNotice(false)}>Dismiss</button>
         </div>
       )}
       
       <HashRouter>
         {/* Display the Navbar component */}
+        {/* HashRouter owns the URL hash, so move focus instead of linking to #main */}
+        <a href="#main" className="skip-link" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>Skip to content</a>
         <Navbar/>
-        
+        <main id="main" tabIndex={-1}>
         {/* Main content with routes */}
         <Routes>
           {/* Define individual Route components for different pages */}
-          <Route path="/" element={<Landing_page/>}/> {/* Correct component name */}
+          <Route path="/" element={<LandingPage/>}/> {/* Correct component name */}
           <Route path="/login" element={<Login/>}/>
           <Route path="/signup" element={<SignUp/>}/>
           <Route path="/instant-consultation" element={<InstantConsultation/>}/>
@@ -102,6 +89,7 @@ function App() {
           <Route path="/profile" element={<ProfileCard/>}/>
           <Route path="/reports" element={<ReportsLayout/>}/>
         </Routes>
+        </main>
         <Notification />
         <AppointmentNotification />
       </HashRouter>
