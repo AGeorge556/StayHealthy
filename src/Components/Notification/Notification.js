@@ -5,7 +5,7 @@ import './Notification.css';
 const Notification = () => {
   // State variables to manage user authentication, username, doctor data, and appointment data
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
+  const [, setUsername] = useState("");
   const [doctorData, setDoctorData] = useState(null);
   const [appointmentData, setAppointmentData] = useState(null);
   // State variable to control notification visibility
@@ -64,7 +64,7 @@ const Notification = () => {
         setShowNotification(true);
       }
     }
-  }, []); // Only run once on mount
+  }, [checkAppointments]); // checkAppointments is stable, so this runs once on mount
 
   // Separate useEffect for handling appointment cancellation
   useEffect(() => {
@@ -115,44 +115,29 @@ const Notification = () => {
 
   // Return JSX elements to display appointment details if user is logged in
   return (
-    <div>
-      {/* Display appointment notification if user is logged in, showNotification is true, and appointment data exists */}
+    <>
       {isLoggedIn && showNotification && appointmentData && (
-        <div className="notification-container">
-          <div className="notification-card">
-            <button className="notification-close" onClick={handleCloseNotification}>×</button>
-            <div className="notification-content">
-              <h3 className="notification-title">Appointment Confirmed!</h3>
-              <div className="notification-details">
-                <p><strong>Doctor:</strong> {doctorData?.name}</p>
-                <p><strong>Specialty:</strong> {doctorData?.speciality}</p>
-                <p><strong>Patient:</strong> {appointmentData.name}</p>
-                <p><strong>Date:</strong> {formatDate(appointmentData.appointmentDate)}</p>
-                <p><strong>Time:</strong> {appointmentData.timeSlot}</p>
-                <p><strong>Booked on:</strong> {appointmentData.bookingDate || 'Today'}</p>
-              </div>
-              <p className="notification-footer">
-                You can view or cancel this appointment from the doctor's profile.
-              </p>
-            </div>
-          </div>
+        <div className="toast toast--secondary" role="status" aria-live="polite">
+          <button type="button" className="toast__close" onClick={handleCloseNotification} aria-label="Dismiss notification">&times;</button>
+          <h3 className="toast__title">Appointment confirmed</h3>
+          <p className="toast__body"><strong>Doctor:</strong> {doctorData?.name}</p>
+          <p className="toast__body"><strong>Specialty:</strong> {doctorData?.speciality}</p>
+          <p className="toast__body"><strong>Patient:</strong> {appointmentData.name}</p>
+          <p className="toast__body"><strong>Date:</strong> {formatDate(appointmentData.appointmentDate)}</p>
+          <p className="toast__body"><strong>Time:</strong> {appointmentData.timeSlot}</p>
+          <p className="toast__body"><strong>Booked on:</strong> {appointmentData.bookingDate || 'Today'}</p>
+          <p className="toast__note">You can view or cancel this appointment from the doctor's profile.</p>
         </div>
       )}
-      
-      {/* Display cancellation notification if an appointment was just cancelled */}
+
       {isLoggedIn && isAppointmentCancelled && (
-        <div className="notification-container cancellation">
-          <div className="notification-card cancellation">
-            <div className="notification-content">
-              <h3 className="notification-title">Appointment Cancelled</h3>
-              <p className="notification-message">Your appointment has been successfully cancelled.</p>
-            </div>
-          </div>
+        <div className="toast toast--secondary toast--cancelled" role="status" aria-live="polite">
+          <h3 className="toast__title">Appointment cancelled</h3>
+          <p className="toast__body">Your appointment has been successfully cancelled.</p>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
-// Export Notification component for use in other parts of the application
-export default Notification; 
+export default Notification;

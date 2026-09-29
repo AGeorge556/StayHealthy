@@ -7,6 +7,7 @@ const ReportsLayout = () => {
   const [error, setError] = useState(null);
   const [viewingReport, setViewingReport] = useState(null);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [notice, setNotice] = useState(null);
 
   useEffect(() => {
     // Function to fetch user reports
@@ -118,9 +119,7 @@ const ReportsLayout = () => {
     document.body.removeChild(link);
     
     // Show instructions alert with a delay to ensure the click is processed
-    setTimeout(() => {
-      alert('To save as PDF: Use your browser\'s Print function and select "Save as PDF" as the destination.');
-    }, 100);
+    setNotice('To save as PDF: use your browser\'s Print function and select "Save as PDF" as the destination.');
   };
 
   // Close the report modal
@@ -131,110 +130,115 @@ const ReportsLayout = () => {
 
   if (loading) {
     return (
-      <div className="reports-container">
-        <div className="loading">
-          <div className="spinner"></div>
+      <main className="page">
+        <div className="state" role="status">
+          <div className="spinner" aria-hidden="true"></div>
           <p>Loading your reports...</p>
         </div>
-      </div>
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className="reports-container">
-        <div className="error-message">
-          <i className="error-icon">⚠️</i>
-          <p>{error}</p>
-        </div>
-      </div>
+      <main className="page">
+        <div className="alert alert--error" role="alert">{error}</div>
+      </main>
     );
   }
 
   return (
-    <div className="reports-container">
-      <h1>Your Medical Reports</h1>
-      
+    <main className="page">
+      <header className="page__header">
+        <h1>Your medical reports</h1>
+        {reports.length > 0 && (
+          <p>You have <strong>{reports.length}</strong> medical reports available.</p>
+        )}
+      </header>
+
+      {notice && (
+        <div className="alert alert--info" role="status">{notice}</div>
+      )}
+
       {reports.length === 0 ? (
-        <div className="no-reports">
+        <div className="state">
+          <h3>No reports yet</h3>
           <p>You don't have any medical reports yet.</p>
         </div>
       ) : (
-        <>
-          <div className="reports-summary">
-            <p>You have <strong>{reports.length}</strong> medical reports available.</p>
-          </div>
-          
-          <div className="reports-table-container">
-            <table className="reports-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Type</th>
-                  <th>Doctor</th>
-                  <th>Summary</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reports.map((report) => (
-                  <tr key={report.id}>
-                    <td>{formatDate(report.date)}</td>
-                    <td>{report.type}</td>
-                    <td>{report.doctor}</td>
-                    <td className="report-summary">{report.summary}</td>
-                    <td className="report-actions">
-                      <button 
-                        className="view-report-btn"
+        <div className="table-wrap reports-table-wrap">
+          <table className="table reports-table">
+            <thead>
+              <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Type</th>
+                <th scope="col">Doctor</th>
+                <th scope="col">Summary</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reports.map((report) => (
+                <tr key={report.id}>
+                  <td data-label="Date">{formatDate(report.date)}</td>
+                  <td data-label="Type">{report.type}</td>
+                  <td data-label="Doctor">{report.doctor}</td>
+                  <td data-label="Summary">{report.summary}</td>
+                  <td data-label="Actions">
+                    <div className="btn-row">
+                      <button
+                        type="button"
+                        className="btn btn--primary btn--sm"
                         onClick={() => handleViewReport(report)}
-                        title="View Report"
+                        aria-label={`View ${report.type} report`}
                       >
                         View
                       </button>
-                      <button 
-                        className="print-report-btn"
+                      <button
+                        type="button"
+                        className="btn btn--secondary btn--sm"
                         onClick={() => handlePrintReport(report)}
-                        title="Print Report"
+                        aria-label={`Print ${report.type} report`}
                       >
                         Print
                       </button>
-                      <button 
-                        className="download-report-btn"
+                      <button
+                        type="button"
+                        className="btn btn--secondary btn--sm"
                         onClick={() => handleDownloadReport(report)}
-                        title="Download Report"
+                        aria-label={`Download ${report.type} report`}
                       >
                         Download
                       </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      {/* Report Modal (for future enhancements) */}
       {reportModalOpen && viewingReport && (
-        <div className="report-modal-backdrop" onClick={closeReportModal}>
-          <div className="report-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button 
-              className="close-modal-btn" 
-              onClick={closeReportModal}
-              aria-label="Close"
-              title="Close"
-            >
-              ×
-            </button>
-            <h2>{viewingReport.type} Report</h2>
+        <div className="modal-overlay" onClick={closeReportModal}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="report-modal-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="report-modal-title">{viewingReport.type} report</h2>
             <p>The report is now open in a new tab. If it didn't open automatically, please check your browser's popup settings.</p>
-            <p className="modal-doctor">Doctor: {viewingReport.doctor}</p>
-            <p className="modal-date">Date: {formatDate(viewingReport.date)}</p>
+            <p>Doctor: {viewingReport.doctor}<br />Date: {formatDate(viewingReport.date)}</p>
+            <button type="button" className="btn btn--secondary" onClick={closeReportModal}>
+              Close
+            </button>
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 };
 
-export default ReportsLayout; 
+export default ReportsLayout;

@@ -17,6 +17,8 @@ const ProfileCard = () => {
     phone: ''
   });
   const [isServerAvailable, setIsServerAvailable] = useState(!USE_MOCK_API);
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState(null);
   const navigate = useNavigate();
 
   // Function to use session storage data (mock mode) - renamed from useSessionStorageData to getSessionStorageData
@@ -74,6 +76,7 @@ const ProfileCard = () => {
     } else {
       navigate('/login');
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- the fetch helpers are recreated each render; adding them would refetch in a loop
   }, [navigate, isServerAvailable]);
 
   // Function to fetch user profile data from the API
@@ -175,6 +178,7 @@ const ProfileCard = () => {
   
   // Toggle edit mode
   const handleEdit = () => {
+    setNotice(null);
     setIsEditing(!isEditing);
     if (!isEditing) {
       setEditableData({
@@ -194,7 +198,17 @@ const ProfileCard = () => {
   };
   
   // Save profile changes to API or localStorage
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    if (e) e.preventDefault();
+    setSaving(true);
+    try {
+      await saveProfile();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveProfile = async () => {
     const authToken = sessionStorage.getItem('auth-token');
     const email = sessionStorage.getItem('email');
     
@@ -221,7 +235,7 @@ const ProfileCard = () => {
       window.dispatchEvent(profileUpdateEvent);
       
       // Show success message
-      alert('Profile Updated Successfully!');
+      setNotice({ type: 'success', text: 'Profile updated successfully.' });
     } else {
       // Try to use API
       try {
@@ -267,7 +281,7 @@ const ProfileCard = () => {
           window.dispatchEvent(profileUpdateEvent);
           
           // Show success message
-          alert('Profile Updated Successfully!');
+          setNotice({ type: 'success', text: 'Profile updated successfully.' });
         } else {
           throw new Error('Failed to update profile');
         }
@@ -292,7 +306,7 @@ const ProfileCard = () => {
         window.dispatchEvent(profileUpdateEvent);
         
         // Show success message with warning
-        alert('Profile Updated Successfully! (Offline Mode)');
+        setNotice({ type: 'warning', text: 'Profile updated locally. The server is unreachable (offline mode).' });
       }
     }
   };
@@ -318,111 +332,131 @@ const ProfileCard = () => {
   };
 
   if (!isLoggedIn) {
-    return <div className="profile-container">Please log in to view your profile.</div>;
+    return (
+      <main className="page page--narrow">
+        <div className="state" role="status">
+          <div className="spinner" aria-hidden="true"></div>
+          <p>Please log in to view your profile.</p>
+        </div>
+      </main>
+    );
   }
 
+  const details = [
+    ['Name', userData.name],
+    ['Email', userData.email],
+    ['Phone number', userData.phone],
+    ['Member since', userData.joinDate],
+    ['Total appointments', getTotalAppointments()],
+    ['Status', (!isServerAvailable || USE_MOCK_API) ? 'Offline mode' : 'Active'],
+  ];
+
   return (
-    <div className="profile-container">
-      <div className="profile-card">
+    <main className="page page--narrow">
+      <div className="card">
         <div className="profile-header">
-          <div className="profile-avatar">
+          <div className="profile-avatar" aria-hidden="true">
             {userData.name.charAt(0).toUpperCase()}
           </div>
           <div className="profile-title">
-            <h2>User Profile</h2>
+            <h1 className="profile-heading">User profile</h1>
             {!isEditing && (
-              <div className="profile-actions">
-                <button className="edit-button" onClick={handleEdit}>
-                  Edit Profile
+              <div className="btn-row">
+                <button type="button" className="btn btn--primary btn--sm" onClick={handleEdit}>
+                  Edit profile
                 </button>
-                <button className="logout-button" onClick={handleLogout}>
+                <button type="button" className="btn btn--secondary btn--sm" onClick={handleLogout}>
                   Logout
                 </button>
               </div>
             )}
           </div>
         </div>
-        
-        <div className="profile-content">
-          {isEditing ? (
-            <div className="profile-edit-form">
-              <div className="form-group">
-                <label htmlFor="name">Name:</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={editableData.name}
-                  onChange={handleInputChange}
-                  placeholder="Enter your name"
-                  required
-                />
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="email">Email:</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={userData.email}
-                  disabled
-                  className="disabled-input"
-                />
-                <small>Email cannot be changed</small>
-              </div>
-              
-              <div className="form-group">
-                <label htmlFor="phone">Phone Number:</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={editableData.phone}
-                  onChange={handleInputChange}
-                  placeholder="Enter your phone number"
-                  pattern="[0-9]{10}"
-                />
-                <small>10-digit number, no spaces or dashes</small>
-              </div>
-              
-              <div className="edit-buttons">
-                <button className="save-button" onClick={handleSave}>Save Changes</button>
-                <button className="cancel-button" onClick={handleCancel}>Cancel</button>
-              </div>
+
+        {notice && (
+          <div
+            className={`alert alert--${notice.type}`}
+            role={notice.type === 'error' ? 'alert' : 'status'}
+          >
+            {notice.text}
+          </div>
+        )}
+
+        {isEditing ? (
+          <form onSubmit={handleSave}>
+            <div className="form-group">
+              <label htmlFor="name">Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                className="form-control"
+                value={editableData.name}
+                onChange={handleInputChange}
+                placeholder="Enter your name"
+                autoComplete="name"
+                required
+              />
             </div>
-          ) : (
-            <div className="profile-details">
-              <div className="detail-row">
-                <strong>Name:</strong>
-                <span>{userData.name}</span>
-              </div>
-              <div className="detail-row">
-                <strong>Email:</strong>
-                <span>{userData.email}</span>
-              </div>
-              <div className="detail-row">
-                <strong>Phone Number:</strong>
-                <span>{userData.phone}</span>
-              </div>
-              <div className="detail-row">
-                <strong>Member Since:</strong>
-                <span>{userData.joinDate}</span>
-              </div>
-              <div className="detail-row">
-                <strong>Total Appointments:</strong>
-                <span>{getTotalAppointments()}</span>
-              </div>
-              <div className="detail-row">
-                <strong>Status:</strong>
-                <span>{(!isServerAvailable || USE_MOCK_API) ? "Offline Mode" : "Active"}</span>
-              </div>
+
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="form-control"
+                value={userData.email}
+                aria-describedby="email-hint"
+                disabled
+              />
+              <p className="field-hint" id="email-hint">Email cannot be changed</p>
             </div>
-          )}
-        </div>
+
+            <div className="form-group">
+              <label htmlFor="phone">Phone number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                className="form-control"
+                value={editableData.phone}
+                onChange={handleInputChange}
+                placeholder="Enter your phone number"
+                pattern="[0-9]{10}"
+                autoComplete="tel"
+                aria-describedby="phone-hint"
+              />
+              <p className="field-hint" id="phone-hint">10-digit number, no spaces or dashes</p>
+            </div>
+
+            <div className="btn-row">
+              <button
+                type="submit"
+                className={`btn btn--primary${saving ? ' is-loading' : ''}`}
+                disabled={saving}
+                aria-busy={saving}
+              >
+                Save changes
+              </button>
+              <button type="button" className="btn btn--secondary" onClick={handleCancel} disabled={saving}>
+                Cancel
+              </button>
+            </div>
+          </form>
+        ) : (
+          <dl className="profile-details">
+            {details.map(([term, value]) => (
+              <div className="profile-details__row" key={term}>
+                <dt>{term}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </div>
-    </div>
+    </main>
   );
 };
 
-export default ProfileCard; 
+export default ProfileCard;
