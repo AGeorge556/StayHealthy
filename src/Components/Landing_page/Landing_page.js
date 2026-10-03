@@ -1,62 +1,60 @@
-import React, { useState, useEffect } from "react"; // Importing the necessary modules from React library
-import { Link, useNavigate } from "react-router-dom"; // Importing the Link and useNavigate components from react-router-dom library
-import "./Landing_page.css"; // Importing the CSS styles for the Landing_Page component
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "./Landing_page.css";
 
-// Defining the Function component Landing_Page
+const STEPS = [
+  { title: "Tell us what you need", text: "Search by speciality, from general physicians to dermatologists." },
+  { title: "Pick a doctor", text: "Compare experience and ratings, then choose a time that works." },
+  { title: "Get care", text: "Consult instantly or visit in person, and keep your reports in one place." },
+];
+
 const Landing_Page = () => {
-  const navigate = useNavigate(); // Initialize the navigate function
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to check if user is logged in
-  
-  // Effect to check user's login status on component mount
-  useEffect(() => {
-    const authToken = sessionStorage.getItem("auth-token");
-    if (authToken) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-  
-  // Handle Get Started button click
-  const handleGetStarted = () => {
-    if (isLoggedIn) {
-      // If user is logged in, navigate to booking consultation page
-      navigate("/booking-consultation");
-    } else {
-      // If not logged in, scroll to services section
-      document.getElementById("services")?.scrollIntoView({ behavior: "smooth" });
-      // Alternatively, you could redirect to login page
-      // navigate("/login");
-    }
-  };
-  
-  return (
-    <section className="hero-section"> {/* Creating a section with class name 'hero-section' */}
-      <div>
-        <div data-aos="fade-up" className="flex-hero"> {/* Creating a div with data-aos attribute and class name 'flex-hero' */}
-            
-            <h1>
-              Your Health<br/>
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-              <span className="text-gradient">
-                
-                Our Responsibility
-              </span>
-            </h1>
-              <div className="blob-cont"> {/* Creating a div with class name 'blob-cont' */}
-                  <div className="blue blob"></div> {/* Creating a blue blob inside the 'blob-cont' div */}
-              </div>
-              <div className="blob-cont"> {/* Creating another div with class name 'blob-cont' */}
-                  <div className="blue1 blob"></div> {/* Creating a different blue blob inside the second 'blob-cont' div */}
-              </div>
-            {/* Use button with onClick handler instead of anchor tag */}
-            <button className="button" onClick={handleGetStarted}>
-              {isLoggedIn ? "Book Consultation" : "Get Started"}
-            </button>
+  useEffect(() => {
+    setIsLoggedIn(!!sessionStorage.getItem("auth-token"));
+  }, []);
+
+  return (
+    <div className="landing">
+      <section className="hero page" aria-labelledby="hero-title">
+        <div className="hero__copy">
+          <p className="hero__eyebrow">Online consultations &amp; appointments</p>
+          <h1 id="hero-title">
+            Your health, <em>our responsibility.</em>
+          </h1>
+          <p className="hero__lede">
+            Find the right doctor, book a visit or start an instant consultation, all from one place.
+          </p>
+          <div className="btn-row">
+            {isLoggedIn ? (
+              <>
+                <Link to="/booking-consultation" className="btn btn--primary">Book an appointment</Link>
+                <Link to="/instant-consultation" className="btn btn--secondary">Instant consultation</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/signup" className="btn btn--primary">Get started</Link>
+                <Link to="/login" className="btn btn--secondary">I already have an account</Link>
+              </>
+            )}
+          </div>
         </div>
-      </div>
-      
-      <div id="services"></div> {/* Add an empty div as the services section target */}
-    </section>
+
+        <ol className="steps" id="services" aria-label="How it works">
+          {STEPS.map((step, i) => (
+            <li key={step.title} className="steps__item">
+              <span className="steps__num" aria-hidden="true">{i + 1}</span>
+              <div>
+                <h2 className="steps__title">{step.title}</h2>
+                <p>{step.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+    </div>
   );
 };
 
-export default Landing_Page; // Exporting the Landing_Page component to be used in other parts of the application
+export default Landing_Page;

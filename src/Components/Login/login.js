@@ -10,6 +10,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [showerr, setShowerr] = useState(''); // State to show error messages
     const [showSuccess, setShowSuccess] = useState(false); // State to show success message
+    const [isLoading, setIsLoading] = useState(false);
     
     const navigate = useNavigate(); // Navigation hook from react-router
     
@@ -61,6 +62,7 @@ const Login = () => {
         }
         
         // If the server is available, try the API
+        setIsLoading(true);
         try {
             // Add a timeout to the fetch request
             const controller = new AbortController();
@@ -118,6 +120,8 @@ const Login = () => {
             setIsServerAvailable(false);
             setShowerr("Logging in offline mode");
             setTimeout(() => handleMockLogin(), 1000);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -145,66 +149,64 @@ const Login = () => {
     
     // JSX to render the Login form
     return (
-        <div className="container">
-            <div className="login-grid">
-                <div className="login-text">
-                    <h2>Login</h2>
-                </div>
-                <div className="login-text">
-                    Are you a new member? <span><Link to="/signup" style={{ color: '#2190FF' }}>Sign Up Here</Link></span>
-                </div>
-                <br />
+        <div className="page page--narrow">
+            <div className="card auth-card">
+                <h1 className="auth-title">Login</h1>
+                <p className="auth-sub">
+                    Are you a new member? <Link to="/signup">Sign Up Here</Link>
+                </p>
                 {showSuccess && (
-                    <div className="success-message" style={{ color: 'green', marginBottom: '15px', padding: '10px', backgroundColor: '#f0fff0', borderRadius: '5px' }}>
+                    <div className="alert alert--success" role="status">
                         Registration successful! Please login with your credentials.
                     </div>
                 )}
-                <div className="login-form">
-                    <form method="POST" onSubmit={handleLogin}>
-                        <div className="form-group">
-                            <label htmlFor="email">Email</label>
-                            <input 
-                                type="email" 
-                                name="email" 
-                                id="email" 
-                                className="form-control" 
-                                placeholder="Enter your email" 
-                                aria-describedby="helpId"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="password">Password</label>
-                            <input
-                                type="password"
-                                name="password"
-                                id="password"
-                                className="form-control"
-                                placeholder="Enter your password"
-                                aria-describedby="helpId"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        
-                        {showerr && <div className="err" style={{ color: 'red', marginBottom: '10px' }}>{showerr}</div>}
-                        
-                        <div className="btn-group">
-                            <button type="submit" className="btn btn-primary mb-2 mr-1 waves-effect waves-light">Login</button>
-                            <button type="reset" className="btn btn-danger mb-2 waves-effect waves-light">Reset</button>
-                            {!isServerAvailable && !USE_MOCK_API && (
-                                <button type="button" className="btn btn-warning mb-2 waves-effect waves-light" onClick={handleMockLogin}>
-                                    Continue Offline
-                                </button>
-                            )}
-                        </div>
-                        <br />
-                        <div className="login-text">
-                            Forgot Password?
-                        </div>
-                    </form>
-                </div>
+                <form onSubmit={handleLogin} noValidate>
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            className="form-control"
+                            placeholder="Enter your email"
+                            autoComplete="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            className="form-control"
+                            placeholder="Enter your password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+
+                    {showerr && <div className="alert alert--error" role="alert">{showerr}</div>}
+
+                    <div className="btn-row">
+                        <button
+                            type="submit"
+                            className={`btn btn--primary btn--block${isLoading ? ' is-loading' : ''}`}
+                            disabled={isLoading}
+                            aria-busy={isLoading}
+                        >
+                            Login
+                        </button>
+                        {!isServerAvailable && !USE_MOCK_API && (
+                            <button type="button" className="btn btn--secondary btn--block" onClick={handleMockLogin}>
+                                Continue Offline
+                            </button>
+                        )}
+                    </div>
+                    <p className="auth-note">Forgot your password? Contact support.</p>
+                </form>
             </div>
         </div>
     );

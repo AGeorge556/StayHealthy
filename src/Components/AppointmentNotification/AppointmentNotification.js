@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './AppointmentNotification.css';
+import { formatDoctorName } from '../../utils/formatDoctorName';
 
 const AppointmentNotification = () => {
   const [visible, setVisible] = useState(false);
@@ -87,40 +88,26 @@ const AppointmentNotification = () => {
     return null;
   }
 
+  const rows = [
+    ['Doctor', formatDoctorName(doctorData.name)],
+    ['Speciality', doctorData.speciality],
+    ['Name', appointmentData.name],
+    ['Phone number', appointmentData.phoneNumber],
+    ['Date of appointment', formatDate(appointmentData.appointmentDate)],
+    ['Time slot', appointmentData.timeSlot],
+  ];
+
   return (
-    <div className="appointment-notification-container">
-      <div className="appointment-notification-card">
-        <button className="close-notification-btn" onClick={handleClose}>
-          &times;
-        </button>
-        
-        <div className="appointment-notification-header">
-          <h2>Appointment Details</h2>
-        </div>
-        
-        <div className="appointment-notification-content">
-          <div className="notification-detail">
-            <strong>Doctor:</strong> Dr. {doctorData.name}
-          </div>
-          <div className="notification-detail">
-            <strong>Speciality:</strong> {doctorData.speciality}
-          </div>
-          <div className="notification-detail">
-            <strong>Name:</strong> {appointmentData.name}
-          </div>
-          <div className="notification-detail">
-            <strong>Phone Number:</strong> {appointmentData.phoneNumber}
-          </div>
-          <div className="notification-detail">
-            <strong>Date of Appointment:</strong> {formatDate(appointmentData.appointmentDate)}
-          </div>
-          <div className="notification-detail">
-            <strong>Time Slot:</strong> {appointmentData.timeSlot}
-          </div>
-        </div>
-      </div>
+    <div className="toast appointment-toast" role="status" aria-live="polite">
+      <button type="button" className="toast__close" onClick={handleClose} aria-label="Dismiss appointment details">
+        &times;
+      </button>
+      <h3 className="toast__title">Appointment details</h3>
+      {rows.map(([label, value]) => (
+        <p className="toast__body" key={label}><strong>{label}:</strong> {value}</p>
+      ))}
     </div>
   );
 };
 
-export default AppointmentNotification; 
+export default AppointmentNotification;

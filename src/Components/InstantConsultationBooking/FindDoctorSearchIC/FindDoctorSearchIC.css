@@ -1,288 +1,58 @@
-.location-search-box {
-    display: flex;
-    align-items: center;
-    width: 430px;
-    position: relative;
-    margin-top: 15px;
-    box-shadow: rgba(0, 0, 0,.1) 0 - 1px 0 0 inset;
-    border-radius: 5px;
-}
-
-.location-search-box>img {
-    border: 1px solid #ddd;
-    border-right: none;
-    height: 40px;
-    padding-left: 5px;
-}
-
-.search-location-input-box {
-    height: 40px;
-    width: 100%;
-    padding: 6px 20px 5px 10px;
-    border: 1px solid rgb(59, 58, 58);
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    outline: none;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.search-location-input-results {
-    position: absolute;
-    top: 40px;
-    left: 0;
-    width: 100%;
-    z-index: 5;
-    margin-top: 2px;
-    border: 1px solid #555;
-    max-height: 300px;
-    overflow-y: auto;
-    background-color: #fff;
-}
-
-.search-location-result-item {
-    height: 60px;
-    display: flex;
-    align-items: center;
-    background-color: #fff;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 10px 12px;
-    column-gap: 14px;
-    cursor: pointer;
-    text-align: left;
-}
-
-.search-location-result-item>span:nth-of-type(1) {
-    border: 1px solid #f0f0f5;
-    border-radius: 50%;
-    padding: 8px;
-    background-color: #f0f0f5;
-}
-
-.search-location-result-item>span:nth-of-type(2) {
-    color: #414146;
-    font-size: 14px;
-}
-
-.search-location-result-item>span:nth-of-type(3) {
-    font-size: 11px;
-    flex-grow: 1;
-    color: #787887;
-    text-align: right;
-    text-transform: uppercase;
-    justify-self: flex-end;
-}
-
-.search-location-result-item:hover {
-    background-color: #f0f0f5;
-}
-
-.doctor-search-box {
-    display: flex;
-    align-items: center;
-    width: 430px;
-    position: relative;
-    margin-top: 25px;
-    margin-bottom: 10px;
-    box-shadow: rgba(0, 0, 0,.1) 0 - 1px 0 0 inset;
-    border-radius: 5px;
-}
-
-.doctor-search-box>img {
-    border: 1px solid #ddd;
-    border-right: none;
-    height: 40px;
-    padding-left: 5px;
-}
-
-.search-doctor-input-box {
-    height: 40px;
-    width: 100%;
-    padding: 6px 20px 5px 10px;
-    outline: none;
-    cursor: pointer;
-    font-size: 14px;
-    border-top-left-radius:5px;
-    border-bottom-left-radius:5px;
-    border-top-right-radius:0;
-    border-bottom-right-radius:0;
-    border:1px solid rgb(59, 58, 58);
-}
-
-.findiconimg{
-    width: 40px;
-    left: 0;
-    background-color: rgb(239, 234, 234);
-    height: 40px;
-    border: 1px solid rgb(59, 58, 58);
-    border-left: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-}
-
-.findIcon {
-    width: 20px;
-    height: 20px;
-}
-
-.search-doctor-input-results {
-    position: absolute;
-    top: 40px;
-    left: 0;
-    width: 100%;
-    z-index: 5;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 2px;
-    border: 1px solid #555;
-    background-color: #fff;
-}
-
-.search-doctor-result-item {
-    height: 60px;
-    display: flex;
-    align-items: center;
-    background-color: #fff;
-    border-bottom: 1px solid #e0e0e0;
-    padding: 10px 12px;
-    column-gap: 14px;
-    cursor: pointer;
-    text-align: left;
-}
-
-.search-doctor-result-item:hover {
-    background-color: #f0f0f5;
-}
-
-.search-doctor-result-item>span:nth-of-type(1) {
-    border: 1px solid #f0f0f5;
-    border-radius: 50%;
-    padding: 8px;
-    background-color: #f0f0f5;
-}
-
-.search-doctor-result-item>span:nth-of-type(2) {
-    font-size: 14px;
-    color: #414146;
-}
-
-.search-doctor-result-item>span:nth-of-type(3) {
-    font-size: 11px;
-    flex-grow: 1;
-    color: #787887;
-    text-align: right;
-    text-transform: uppercase;
-    justify-self: flex-end;
-}
-
 .search-form {
-    width: 100%;
-    max-width: 600px;
+  display: grid;
+  gap: var(--space-4);
+  align-items: end;
 }
-
-.home-search-container {
-    width: 100%;
-    padding: 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+.search-field { position: relative; }
+.search-input-wrap { position: relative; }
+.search-input-icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  color: var(--text-muted);
+  pointer-events: none;
 }
+.search-input { padding-left: calc(var(--space-3) + 16px + var(--space-2)); }
 
-.search-button {
-    padding: 12px 25px;
-    background-color: #14bef0;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    width: 430px;
-    margin-top: 10px;
+.search-suggestions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: var(--z-nav);
+  margin: var(--space-1) 0 0;
+  padding: var(--space-1);
+  list-style: none;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
 }
-
-.search-button:hover {
-    background-color: #11a7d3;
-}
-
-.no-results {
-    padding: 20px;
-    text-align: center;
-    color: #787887;
-}
-
-.finddoctor {
-    padding: 30px 0;
-} 
-
-.finddoctor h1 {
-    margin-bottom: 20px;
-    color: #414146;
-}
-
-.finddoctor p {
-    margin-bottom: 20px;
-    color: #787887;
-}
-
-@media screen and (max-width: 768px) {
-    .doctor-search-box,
-    .location-search-box,
-    .search-button {
-        width: 90%;
-    }
-}
-
-.finddoctor .mainimg{
-    width: 312px;
-    height: 312px;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 5px;
-}
-
-.findiconimg svg {
-  width: 20px;
-  height: 20px;
-  color: #333;
-}
-
-.icon-container {
+.search-suggestion {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #f0f0f5;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  padding: 5px;
-}
-
-.icon-container svg {
-  width: 14px;
-  height: 14px;
-  color: #555;
-}
-
-/* Ensure the existing styles are maintained */
-.search-doctor-result-item,
-.search-location-result-item {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 10px 12px;
-  column-gap: 14px;
-  cursor: pointer;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
   text-align: left;
+  cursor: pointer;
 }
+.search-suggestion svg { flex: none; color: var(--text-muted); }
+.search-suggestion span:first-of-type { flex: 1; }
+.search-suggestion:hover,
+.search-suggestion:focus-visible { background: var(--primary-soft); }
+.search-suggestions__empty { padding: var(--space-3); color: var(--text-muted); font-size: var(--text-sm); }
 
-/* Add these styles to the end of your CSS file */
+@media (min-width: 768px) {
+  .search-form { grid-template-columns: 1fr 1fr auto; }
+}

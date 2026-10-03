@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Sign_up.css';
+import '../Login/login.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_URL, USE_MOCK_API } from '../../config';
 
@@ -143,89 +143,84 @@ const SignUp = () => {
 
     // JSX to render the Sign Up form
     return (
-        <div className="container" style={{marginTop:'5%'}}>
-            <div className="signup-grid">
-                <div className="signup-text">
-                    <h1>Sign Up</h1>
-                </div>
-                <div className="signup-text1">
-                    Already a member? <span><Link to="/login" style={{ color: '#2190FF' }}>Login</Link></span>
-                </div>
-                <div className="signup-form">
-                    <form method="POST" onSubmit={register}>
-                        <div className="form-group">
-                            <label htmlFor="name">Name</label>
-                            <input 
-                                value={name} 
-                                onChange={(e) => setName(e.target.value)} 
-                                type="text" 
-                                name="name" 
-                                id="name" 
-                                className="form-control" 
-                                placeholder="Enter your name" 
-                                aria-describedby="helpId" 
-                                disabled={isLoading}
-                            />
-                        </div>
+        <div className="page page--narrow">
+            <div className="card auth-card">
+                <h1 className="auth-title">Sign Up</h1>
+                <p className="auth-sub">
+                    Already a member? <Link to="/login">Login</Link>
+                </p>
+                <form onSubmit={register} noValidate>
+                    <div className="form-group">
+                        <label htmlFor="name">Name</label>
+                        <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            type="text"
+                            name="name"
+                            id="name"
+                            className="form-control"
+                            placeholder="Enter your name"
+                            autoComplete="name"
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="phone">Phone</label>
+                        <input
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            type="tel"
+                            name="phone"
+                            id="phone"
+                            className="form-control"
+                            placeholder="Enter your phone number"
+                            autoComplete="tel"
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            type="email"
+                            name="email"
+                            id="email"
+                            className="form-control"
+                            placeholder="Enter your email"
+                            autoComplete="email"
+                            disabled={isLoading}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            type="password"
+                            name="password"
+                            id="password"
+                            className="form-control"
+                            placeholder="Enter your password"
+                            autoComplete="new-password"
+                            disabled={isLoading}
+                        />
+                    </div>
 
-                        <div className="form-group">
-                            <label htmlFor="phone">Phone</label>
-                            <input 
-                                value={phone} 
-                                onChange={(e) => setPhone(e.target.value)} 
-                                type="tel" 
-                                name="phone" 
-                                id="phone" 
-                                className="form-control" 
-                                placeholder="Enter your phone number" 
-                                aria-describedby="helpId" 
-                                disabled={isLoading}
-                            />
-                        </div>
+                    {showerr && <div className="alert alert--error" role="alert">{showerr}</div>}
 
-                        <div className="form-group">
-                            <label htmlFor="email">Email</label>
-                            <input 
-                                value={email} 
-                                onChange={(e) => setEmail(e.target.value)} 
-                                type="email" 
-                                name="email" 
-                                id="email" 
-                                className="form-control" 
-                                placeholder="Enter your email" 
-                                aria-describedby="helpId" 
-                                disabled={isLoading}
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="password">Password</label>
-                            <input 
-                                value={password} 
-                                onChange={(e) => setPassword(e.target.value)} 
-                                type="password" 
-                                name="password" 
-                                id="password" 
-                                className="form-control" 
-                                placeholder="Enter your password" 
-                                aria-describedby="helpId" 
-                                disabled={isLoading}
-                            />
-                        </div>
-                        
-                        {showerr && <div className="err" style={{ color: 'red', marginBottom: '10px' }}>{showerr}</div>}
-                        
-                        <div className="btn-group">
-                            <button type="submit" className="btn btn-primary mb-2 mr-1 waves-effect waves-light" disabled={isLoading}>
-                                {isLoading ? 'Submitting...' : 'Submit'}
-                            </button>
-                            <button type="reset" className="btn btn-danger mb-2 waves-effect waves-light" disabled={isLoading}>Reset</button>
-                        </div>
-                    </form>
-                </div>
+                    <button
+                        type="submit"
+                        className={`btn btn--primary btn--block${isLoading ? ' is-loading' : ''}`}
+                        disabled={isLoading}
+                        aria-busy={isLoading}
+                    >
+                        Submit
+                    </button>
+                </form>
             </div>
         </div>
     );
-}
+};
 
 export default SignUp;
